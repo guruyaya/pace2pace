@@ -13,6 +13,10 @@ While I find the details on this stage kinda fuzzy, I am expecting the first pro
 
 "pace2pace-key" (the user public key)
 
+"pace2pace-sev-key-protocol" (a user can provide a key to be used by automated systems. This will allow creating a more secure version for ordinary use, and a less secure for running services)
+
+"pace2pace-sev-key" (the service public key)
+
 "pace2pace-timestamp" (last change timestamp)
 
 "pace2pace-service-[service name]" (I expect future development of the protocol, will lead to development of serivce providers, that will ride on it's possibilities to provide services. This tag will be kept open to allow services)
@@ -20,6 +24,10 @@ While I find the details on this stage kinda fuzzy, I am expecting the first pro
 "pace2pace-delegate" (allows a user to delegate the page to another service)
 
 "pace2pace-domain" will list all domains, allowed to use this authentication method. This is used on services that have a domain name, and wish to prevent other services from exploiting them using man in the middle attack.
+
+"pace2pace-name" (will provide a name for this page, to allow a user to be identified)
+
+"pace2pace-avatar" (base32 avatar image url)
 
 ## Mode of operation
 The authentaction process goes as follows:
@@ -31,6 +39,7 @@ The authentaction process goes as follows:
 
 ## TODO
 1. Create a Python implementation of the server side authentication process
-2. Create a JAVA implementation of the server side authentication process
-3. Create a separate project as a web service that will allow Simple Pace2Pace auth pages
-4. Defining issues of page validation by other user, and revoking keys when compremised. 
+2. Create a web2py login sceme, and a basic Chrome addon
+3. Create a JAVA implementation of the server side authentication process
+4. Create a separate project as a web service that will allow Simple Pace2Pace auth pages
+5. Defining issues of page validation by other user, and revoking keys when compremised.
