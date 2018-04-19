@@ -19,11 +19,14 @@ While I find the details on this stage kinda fuzzy, I am expecting the first pro
 
 "pace2pace-delegate" (allows a user to delegate the page to another service)
 
+"pace2pace-domain" will list all domains, allowed to use this authentication method. This is used on services that have a domain name, and wish to prevent other services from exploiting them using man in the middle attack.
+
+## Mode of operation
 The authentaction process goes as follows:
-1. The user that wishes to authenticate, contacts the service, giving the page
+1. The user that wishes to authenticate, contacts the service, with a request encoded with the service public key. It will provide it's pace2pace URL.
 2. In a normal course of operation, the service try to read the remote page to get the key. However the service can cache keys, or decide that the key looks suspicious for some reason.
-3. The service will provide the user with a random string it generated, and ask to get it encoded, with the end user private key
-4. The user will return the encoded string
+3. The service will provide the user with a random string it generated, plus the string provided by the user - and encode it using the users public key.
+4. The user will decode the remote service string, and return it, encoded with the service public key.
 5. The service will see that the provided string, after decoding, matches the random string it sent, thous proving the user had access to the private key, thous claiming ownership of the URL
 
 ## TODO
