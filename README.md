@@ -24,10 +24,10 @@ While I find the details on this stage kinda fuzzy, I am expecting the first pro
 * name: An identifier of the user
 * avatar: Small (128x128) image, preferably base32/64 urls to prevent extra request (future implemation)
 * urls: all urls that use this key.
-* keys: public keys object. Defined as follows:
-  - name: the name of the key, which is also the key of this object You must have one named \_ROOT. If you have key type future, it must be named \_FUTURE. This is also the key to this object
-  - protocol: The public key scheme used. Version 0.2a is expected to support GPG only
-  - type: Can be either root, running, service, or future. Keys type abilities description will follow this list
+* keys: public keys object. It's keys defined as follows: the name of the key, which is also the key of this object You must have one named \_ROOT. If you have key type future, it must be named \_FUTURE.
+It's content defined as follows:
+  - protocol: The public key scheme used. Version 0.2a is expected to support GPG only. Defaults to GPG
+  - type: Can be either root, running, service, or future. Keys type abilities description will follow this list. Note that all keys type default to running, except \_ROOT that defaults to root, and \_FUTURE that defaults to future.
   - key: The key
   - service: Array of services using this key (or root, if you want to use it as service key, though not recommended). Version 0.2a will include a design for service named "web". Note that client must support the service it's authenticating against.
   - service-params: Json object. Used on service keys, and includes extra params. It has keys for each service. In "web" the service, it requires a url-regex and endpoint param, which is the url that starts the auth process - params  to complete authentication.
