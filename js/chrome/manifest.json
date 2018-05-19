@@ -1,0 +1,17 @@
+{
+  "name": "Pace2Pace Login",
+  "version": "0.2",
+  "manifest_version": 2,
+  "description": "Allows a user login with pace2pace interface",
+  "icons": { "128": "icon_128.png" },
+  "browser_action": {
+    "default_icon": "icon_128.png",
+    "default_title": "Do action"
+},
+  "background": {
+    "persistent": false,
+    "scripts": ["bg.js"]
+  },
+  "permissions": ["tabs", "http://*/*"],
+  "content_security_policy": "default-src 'self';style-src 'self' data: chrome-extension-resource: 'unsafe-inline';"
+}
