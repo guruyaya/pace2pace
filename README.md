@@ -37,16 +37,19 @@ It's content defined as follows:
 * depricated: public keys used in the past, but cannot be used today. This includes all past key data, plus additional data. However the key objects are arranged as array of objects, so same key revisions of the same key, can be kept. This is used, if a data in the past was signed by any of the keys.
   - deprication-date: the GMT date / time of the deprication.
 ### Key types:
-* root: While it's main function is to sign others keys, it can be used with any other function declared.
+* root: While it's main function is to sign others keys, it can be used with any other function declared. There can only be one root key, in the keys list, and it has to be named \_ROOT.
+IMPORTANT NOTE ABOUT ROOT KEYS: that the client 1-to-1 identfier is not the URL, but the root key. Meaning, a client can replace his url. The only reason a URL is used, is to invalidate old keys. The client is expected to keep his URLS in sync. The only reason he can specify several is to allow logins in case one of the services is down.
+
 * running: This is what end user is expected to use in normal operation to log in and identify. can have multiple keys
 * service: Used for running services, that other users are authenticating against. While running keys can be used this way, service keys are expected not to be password protected, thus better suited for this purpose only, and remote services should not authenticate against.
-* future: While this is not a type expected to be implemented in version 1, this is a way to inform services of a root key expected to be replaced soon.
-
+* future: While this is not a type expected to be implemented in version 1, this is a way to inform services of a root key expected to be replaced soon. There can only be one future key, in the keys list, and it has to be named \_FUTURE.
+IMPORTANT NOTE ABOUSE FUTURE KEYS: All services that keep track of a user, are exptected to keep thier future keys stored. On login, if the root key could not be found in the list of users, the future keys must be scanned, and if found - should relace the current root key. This feature is a way to ensure the valitidy of future keys, when the become root keys. 
 
 ### Mode of operation
+(Note: all cache operations will be implemented after the release of version 1)
 The authentication process goes as follows:
 This section defines client, as the entity that wishes to authenticate, and service as the entity that it wishes to authenticate against.
-1. The service presents should let the client know what service is used, the Pace2Pace urls, and the ID of the key to validate against.
+1. The service presents should let the client know what service is used, the Pace2Pace urls, and the ID of the key to validate against. It should also include a random string, that it'll keep in the client session.
 2. If the client cached the Pace2Pace url, it sends a head request, to see if e-tag or last modefied headers indicate a change. If not, the cached version is used, if it changed (or no header available), the tag is pulled again, and checked against the cached version. If they differ, we're going to client validation state. If not step 3 can be skipped.
 3. Client validation includes:
 * Signed json is well formed, and includes all required params for this version.
@@ -55,12 +58,12 @@ This section defines client, as the entity that wishes to authenticate, and serv
 * The url used, is one of the urls in the list of urls on the form. Note that the main key to identify a service stays the root key.
 * It stands in all demands suggested by service configuration (In web case, that the URL of the web page must match the regex)
 * It stands on all other client configuration requirements (like HTTPS)
-4. At this point, the client will encrypt a json file, using the service public key, with the suggested id, with the following params:
+4. At this point, the client will encrypt a json file, using the service public key, and sign it using it's own private key, with the suggested id, with the following params:
 * url: Client Pace2Pace urls
 * key: The key you want to authenticate with (This is designed to allow a user to use diffrent keys from diffrent devices)
 * service: Service type (for now: web)
-* token: A random string, 128-256 chars long.
-5. The encrypted json file is sent to the service. Service decrypts, and make sure the JSON file is well formed, and can be used. It also validates that the service asked is provided by this endpoint.
+* token: the service provided token
+5. The encrypted json file is sent to the service. Service decrypts, and make sure the JSON file is well formed, and can be used.
 6. Service goes though a similar process to step 2. In case of a cached version found, step 7 can be skipped
 7. Service validation includes:
 * Signed json is well formed, and includes all required params for this version.
@@ -68,21 +71,8 @@ This section defines client, as the entity that wishes to authenticate, and serv
 * Key type for key given is either root, future or running. Service keys cannot be used to validate against other service keys!
 * Key stands in the requirements set by service configuration.
 * The url used, is one of the urls in the list of urls on the form. Note that the main key to identify a service stays the root key.
-8. Assuming all went well, a json file, encrypted with the client public key, is created with the following params:
-* url: service Pace2Pace urls (this is set to prevent man in the middle attacks)
-* your-token: The token sent by the user. This is a proof that the server managed to decrypt the user message
-* token: A random string, 128-256 chars long.
-* end-point: If the 2nd request is destined to another end-point.
-* extra: Extra requested data. Fields will be named, and basic validators can be set. It may include mandatory fields for the client to give before signing in (extra field is not mandatory, future implemation)
-9. Service sends back the encrypted json file, with the clients public key.
-10. Client decrypts the message, makes sure it's well formed, and he got all the data it needs.
-11. Client makes sure his sent token, and the service "your-token" fields match.
-12. Client encrypts, using the service public key, another JSON file, that includes the following:
-* url: Client Pace2Pace url again. (again, prevent man in the middle)
-* your-token: Proff that the json file was read
-* extra: The extra data requested, and the client is willing to provide.
-13. Encrypted json sent to service (new endpoint if requested)
-14. Service sends back additional instructions. Json Encrypted, with the Pace2Pace URL. In the web service implemation a redirect url is possible.
+8. At this point, the client can validate the sent json file signature matches the suggested key id signature. At this point the client is verified. However if additional information is needed by the service, it can send additional requests, and the client should be able to provide it, in future implemations.
+NOTE: This process cannot be secured from Man In The Middle attacks, without HTTPS connection on the server. I could not think of a way of attacking the keys, if https is not used, but it seems like the right thing to do.
 
 ## TODO
 1. Create a Python / php implementation of the server side authentication process
