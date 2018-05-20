@@ -1,4 +1,13 @@
 (function(){
+  function createCustomException (name) {
+    return function(code, message) {
+      this.prototype = new Error();
+      this.prototype.constructor = name;
+      this.message = message;
+      this.code = code;
+    }
+  }
+
   var Pace2PaceDocSigException = {
       name:        "Pace2PaceDocSigException",
       message:     "The document signature is invalid",
@@ -36,7 +45,7 @@
         var signedJson = openpgp.cleartext.readArmored(data);
         var signaturesDoc = extractJsonFromSignedFile(signedJson);
         if (signaturesDoc.urls.indexOf(url) == -1){
-          throw new Pace2PaceUrlInvalidException
+          throw new Pace2PaceUrlInvalidException(url)
         }
         // get the _ROOT key
         var pubKeyTxt = signaturesDoc.keys._ROOT.key;
@@ -55,4 +64,6 @@
   readPace2PaceSignaturesDoc('http://www.balibalic.info/yairkey.txt', function(){
     console.log('I am here');
   });
+  readPace2PaceSignaturesDoc('http://www.balibalic.info/Pace2PaceDocSigException.txt');
+  readPace2PaceSignaturesDoc('http://www.balibalic.info/Pace2PaceUrlInvalidException.txt');
 })();
