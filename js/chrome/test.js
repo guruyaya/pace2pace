@@ -1,11 +1,16 @@
 (function(){
-Pace2PaceDocSigException = {
+  var Pace2PaceDocSigException = {
       name:        "Pace2PaceDocSigException",
-      level:       "Show Stopper",
       message:     "The document signature is invalid",
-      htmlMessage: "The document signature is invalid",
-      toString:    function(){return this.name + ": " + this.message;}
   };
+
+  var Pace2PaceUrlInvalidException = function(url){
+    return {
+      name:        "Pace2PaceUrlInvalidException",
+      message:     "Url " + url + " is not allowed by this document",
+    }
+  };
+
 
   var getSignedFile = function(url, successCallback, failCallback) {
       var xhr = new XMLHttpRequest();
@@ -26,18 +31,28 @@ Pace2PaceDocSigException = {
     return JSON.parse( signedJson.text );
   }
   // load the json file from url
-  getSignedFile('http://www.balibalic.info/yairkey.txt', function(data, xhr){
-    var signedJson = openpgp.cleartext.readArmored(data);
-    var pubKeyTxt = extractJsonFromSignedFile(signedJson).keys._ROOT.key;
-    var pubKey = openpgp.key.readArmored(pubKeyTxt);
-    signedJson.verify(pubKey.keys).then(function(v){
-      if (!v[0].valid) {
-        throw Pace2PaceDocSigException;
-      }
-      console.log('SigSuccess');
-    });
-    // get the _ROOT key
-    // validate signature
+  var readPace2PaceSignaturesDoc = function(url, successCallback){
+      getSignedFile(url, function(data, xhr){
+        var signedJson = openpgp.cleartext.readArmored(data);
+        var signaturesDoc = extractJsonFromSignedFile(signedJson);
+        if (signaturesDoc.urls.indexOf(url) == -1){
+          throw new Pace2PaceUrlInvalidException
+        }
+        // get the _ROOT key
+        var pubKeyTxt = signaturesDoc.keys._ROOT.key;
+        var pubKey = openpgp.key.readArmored(pubKeyTxt);
 
+        // validate signature
+        var b = signedJson.verify(pubKey.keys).then(function(v){
+          if (!v[0].valid) {
+            throw Pace2PaceDocSigException;
+          }
+          successCallback();
+        });
+
+      });
+  }
+  readPace2PaceSignaturesDoc('http://www.balibalic.info/yairkey.txt', function(){
+    console.log('I am here');
   });
 })();
