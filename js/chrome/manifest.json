@@ -13,5 +13,5 @@
     "scripts": ["bg.js"]
   },
   "permissions": ["tabs", "http://*/*"],
-  "content_security_policy": "default-src 'self';style-src 'self' data: chrome-extension-resource: 'unsafe-inline';"
+  "content_security_policy": "default-src 'self';connect-src *"
 }
