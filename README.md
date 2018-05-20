@@ -26,7 +26,7 @@ While I find the details on this stage kinda fuzzy, I am expecting the first pro
 * urls: all urls that use this key.
 * keys: public keys object. It's keys defined as follows: the name of the key, which is also the key of this object You must have one named \_ROOT. If you have key type future, it must be named \_FUTURE.
 It's content defined as follows:
-  - protocol: The public key scheme used. Version 0.2a is expected to support GPG only. Defaults to GPG
+  - protocol: The public key scheme used. Version 0.2a is expected to support PGP only. Defaults to PGP
   - type: Can be either root, running, service, or future. Keys type abilities description will follow this list. Note that all keys type default to running, except \_ROOT that defaults to root, and \_FUTURE that defaults to future.
   - key: The key
   - service: Array of services using this key (or root, if you want to use it as service key, though not recommended). Version 0.2a will include a design for service named "web". Note that client must support the service it's authenticating against.
@@ -43,7 +43,7 @@ IMPORTANT NOTE ABOUT ROOT KEYS: that the client 1-to-1 identfier is not the URL,
 * running: This is what end user is expected to use in normal operation to log in and identify. can have multiple keys
 * service: Used for running services, that other users are authenticating against. While running keys can be used this way, service keys are expected not to be password protected, thus better suited for this purpose only, and remote services should not authenticate against.
 * future: While this is not a type expected to be implemented in version 1, this is a way to inform services of a root key expected to be replaced soon. There can only be one future key, in the keys list, and it has to be named \_FUTURE.
-IMPORTANT NOTE ABOUSE FUTURE KEYS: All services that keep track of a user, are exptected to keep thier future keys stored. On login, if the root key could not be found in the list of users, the future keys must be scanned, and if found - should relace the current root key. This feature is a way to ensure the valitidy of future keys, when the become root keys. 
+IMPORTANT NOTE ABOUSE FUTURE KEYS: All services that keep track of a user, are exptected to keep thier future keys stored. On login, if the root key could not be found in the list of users, the future keys must be scanned, and if found - should relace the current root key. This feature is a way to ensure the valitidy of future keys, when the become root keys.
 
 ### Mode of operation
 (Note: all cache operations will be implemented after the release of version 1)
