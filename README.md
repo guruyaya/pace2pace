@@ -31,7 +31,6 @@ It's content defined as follows:
   - key: The key
   - service: Array of services using this key (or root, if you want to use it as service key, though not recommended). Version 0.2a will include a design for service named "web". Note that client must support the service it's authenticating against.
   - service-params: Json object. Used on service keys, and includes extra params. It has keys for each service. In "web" the service, it requires a url-regex and endpoint param, which is the url that starts the auth process - params  to complete authentication.
-  - service-endpoint: Used on service keys, to indicate how to authenticate. On web services, it's used to set the login url.
   The json doc is signed with the ROOT key.
   - end-date: expected date for key to be replaced
 * depricated: public keys used in the past, but cannot be used today. This includes all past key data, plus additional data. However the key objects are arranged as array of objects, so same key revisions of the same key, can be kept. This is used, if a data in the past was signed by any of the keys.
