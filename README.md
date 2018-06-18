@@ -48,7 +48,8 @@ IMPORTANT NOTE ABOUSE FUTURE KEYS: All services that keep track of a user, are e
 (Note: all cache operations will be implemented after the release of version 1)
 The authentication process goes as follows:
 This section defines client, as the entity that wishes to authenticate, and service as the entity that it wishes to authenticate against.
-1. The service presents should let the client know what service is used, the Pace2Pace urls, and the ID of the key to validate against. It should also include a random string, that it'll keep in the client session.
+1. The service presents should let the client know what service is used, the Pace2Pace urls, and the ID of the key to validate against. It should also include a validation string, that it'll have to make sure it got back from the client, and timestamp of expiery for this string. 
+NOTE: The protocol does not specify how this test is arrived at and the service. However, all implemations will include a test, that will use a concatination of the privkey and the timeout, after going throgh SHA1. If the library used wants another test, it is welcomed to pass a param saying "noStringTest", to prevent it.
 2. If the client cached the Pace2Pace url, it sends a head request, to see if e-tag or last modefied headers indicate a change. If not, the cached version is used, if it changed (or no header available), the tag is pulled again, and checked against the cached version. If they differ, we're going to client validation state. If not step 3 can be skipped.
 3. Client validation includes:
 * Signed json is well formed, and includes all required params for this version.
