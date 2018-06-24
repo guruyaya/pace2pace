@@ -3,9 +3,13 @@
 var action_vars = window.location.hash.split('&');
 var action
 
+var hide_all_but = function(query){
+    $('.page').hide();
+    $(query).show();
+}
+
 var welcome = function(){
-    console.log('Here');
-    $('#a-welcome-firsttime').show();
+    hide_all_but('#a-welcome-firsttime');
 }
 
 if (action_vars[0] == ''){
