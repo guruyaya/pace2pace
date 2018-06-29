@@ -26,15 +26,15 @@ While I find the details on this stage kinda fuzzy, I am expecting the first pro
 * urls: all urls that use this key.
 * keys: public keys object. It's keys defined as follows: the name of the key, which is also the key of this object You must have one named \_ROOT. If you have key type future, it must be named \_FUTURE.
 It's content defined as follows:
-  - protocol: The public key scheme used. Version 0.2a is expected to support PGP only. Defaults to PGP
+  - protocol: The public key scheme used. Version 0.2a is expected to support PGP only. Defaults to PGP (Future implemation)
   - type: Can be either root, running, service, or future. Keys type abilities description will follow this list. Note that all keys type default to running, except \_ROOT that defaults to root, and \_FUTURE that defaults to future.
   - key: The key
   - service: Array of services using this key (or root, if you want to use it as service key, though not recommended). Version 0.2a will include a design for service named "web". Note that client must support the service it's authenticating against.
   - service-params: Json object. Used on service keys, and includes extra params. It has keys for each service. In "web" the service, it requires a url-regex and endpoint param, which is the url that starts the auth process - params  to complete authentication.
   The json doc is signed with the ROOT key.
-  - end-date: expected date for key to be replaced
-* depricated: public keys used in the past, but cannot be used today. This includes all past key data, plus additional data. However the key objects are arranged as array of objects, so same key revisions of the same key, can be kept. This is used, if a data in the past was signed by any of the keys.
-  - deprication-date: the GMT date / time of the deprication.
+  - end-ts: expected timestamp for key to be replaced. 0 means never / until key expires
+* depricated: (future implemation) public keys used in the past, but cannot be used today. This includes all past key data, plus additional data. However the key objects are arranged as array of objects, so same key revisions of the same key, can be kept. This is used, if a data in the past was signed by any of the keys.
+  - deprication-ts: the timestamp of deprication.
 ### Key types:
 * root: While it's main function is to sign others keys, it can be used with any other function declared. There can only be one root key, in the keys list, and it has to be named \_ROOT.
 IMPORTANT NOTE ABOUT ROOT KEYS: that the client 1-to-1 identfier is not the URL, but the root key. Meaning, a client can replace his url. The only reason a URL is used, is to invalidate old keys. The client is expected to keep his URLS in sync. The only reason he can specify several is to allow logins in case one of the services is down.
@@ -48,7 +48,7 @@ IMPORTANT NOTE ABOUSE FUTURE KEYS: All services that keep track of a user, are e
 (Note: all cache operations will be implemented after the release of version 1)
 The authentication process goes as follows:
 This section defines client, as the entity that wishes to authenticate, and service as the entity that it wishes to authenticate against.
-1. The service presents should let the client know what service is used, the Pace2Pace urls, and the ID of the key to validate against. It should also include a validation string, that it'll have to make sure it got back from the client, and timestamp of expiery for this string. 
+1. The service presents should let the client know what service is used, the Pace2Pace urls, and the ID of the key to validate against. It should also include a validation string, that it'll have to make sure it got back from the client, and timestamp of expiery for this string.
 NOTE: The protocol does not specify how this test is arrived at and the service. However, all implemations will include a test, that will use a concatination of the privkey and the timeout, after going throgh SHA1. If the library used wants another test, it is welcomed to pass a param saying "noStringTest", to prevent it.
 2. If the client cached the Pace2Pace url, it sends a head request, to see if e-tag or last modefied headers indicate a change. If not, the cached version is used, if it changed (or no header available), the tag is pulled again, and checked against the cached version. If they differ, we're going to client validation state. If not step 3 can be skipped.
 3. Client validation includes:
